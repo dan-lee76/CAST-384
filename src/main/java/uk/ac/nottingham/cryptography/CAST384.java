@@ -40,10 +40,42 @@ public class CAST384 extends CASTCipher {
         return new CASTKeySet(tm, tr);
     }
 
+    static int[] bytesToInt(byte[] input) {
+        int[] block = new int[12];
+        for(int i = 0; i < 12; i++){
+            block[i] = (input[(4*i)] & 0xff) << 24 |
+                    (input[(4*i)+1] & 0xff) << 16 |
+                    (input[(4*i)+2] & 0xff) << 8 |
+                    (input[(4*i)+3] & 0xff);
+        }
+        return block;
+    }
+
     @Override
     public CASTKeySet generateRoundKeys(CASTKeySet T, byte[] key, int roundCount, int dodecadCount) {
         // Add your code here
-        return new CASTKeySet(null, null);
+        int totalPairs = roundCount * 6;
+        int idxValue = 0;
+        int[] km = new int[totalPairs];
+        int[] kr = new int[totalPairs];
+        int[] keyBlock = bytesToInt(key);
+
+        int[] Tm = T.getM();
+        int[] Tr = T.getR();
+        for (int i = 0; i < roundCount; i++) {
+            for (int d = 1; d <= dodecadCount; d++) {
+                dodecad(keyBlock, Tm, Tr, idxValue);
+                idxValue+=12;
+            }
+
+            for(int j = 0; j < 6; j++){
+                int id = i * 6;
+                km[id + j] = keyBlock[11-(2*j)];
+                kr[id + j] = keyBlock[j*2] & 31;
+            }
+
+        }
+        return new CASTKeySet(km, kr);
     }
 
 
