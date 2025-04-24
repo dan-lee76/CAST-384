@@ -30,40 +30,95 @@ public class CAST384 extends CASTCipher {
         return new CASTKeySet(null, null);
     }
 
+
+    static int rotatel(int x, int n){
+        return (x << n) | (x >>> (32 - n));
+    }
+
     @Override
     public int f1 (int d, int Km, int Kr) {
         // Add your code here
-        return 0;
+        int ans = rotatel((Km + d), Kr);
+
+        int s1 = S1[(ans >> 24) & 0xFF];
+        int s2 = S2[(ans >> 16) & 0xFF];
+        int s3 = S3[(ans >> 8) & 0xFF];
+        int s4 = S4[ans & 0xFF];
+
+        int t2 = (s1 ^ s2) - s3 ;
+        return t2 + s4;
     }
 
     @Override
     public int f2 (int d, int Km, int Kr) {
         // Add your code here
-        return 0;
+
+        int ans = rotatel((Km ^ d), Kr);
+
+        int s1 = S1[(ans >> 24) & 0xFF];
+        int s2 = S2[(ans >> 16) & 0xFF];
+        int s3 = S3[(ans >> 8) & 0xFF];
+        int s4 = S4[ans & 0xFF];
+
+        int t2 = (s1 - s2) + s3 ;
+        return t2 ^ s4;
+
     }
 
     @Override
     public int f3 (int d, int Km, int Kr) {
         // Add your code here
-        return 0;
+        int ans = rotatel((Km - d), Kr);
+
+        int s1 = S1[(ans >> 24) & 0xFF];
+        int s2 = S2[(ans >> 16) & 0xFF];
+        int s3 = S3[(ans >> 8) & 0xFF];
+        int s4 = S4[ans & 0xFF];
+
+        int t2 = (s1 + s2) ^ s3;
+        return t2 - s4;
     }
 
     @Override
     public int f4 (int d, int Km, int Kr) {
         // Add your code here
-        return 0;
+        int ans = rotatel((Km - d), Kr);
+
+        int s1 = S1[(ans >> 24) & 0xFF];
+        int s2 = S2[(ans >> 16) & 0xFF];
+        int s3 = S3[(ans >> 8) & 0xFF];
+        int s4 = S4[ans & 0xFF];
+
+        int t2 = (s1 ^ s2) + s3;
+        return t2 - s4;
     }
 
     @Override
     public int f5 (int d, int Km, int Kr) {
         // Add your code here
-        return 0;
+        int ans = rotatel((d + Km), Kr);
+
+        int s1 = S1[(ans >> 24) & 0xFF];
+        int s2 = S2[(ans >> 16) & 0xFF];
+        int s3 = S3[(ans >> 8) & 0xFF];
+        int s4 = S4[ans & 0xFF];
+
+        int t2 = (s1 - s2) ^ s3;
+        return t2 + s4;
     }
 
     @Override
     public int f6 (int d, int Km, int Kr) {
         // Add your code here
-        return 0;
+        int ans = rotatel((d ^ Km), Kr);
+
+        int s1 = S1[(ans >> 24) & 0xFF];
+        int s2 = S2[(ans >> 16) & 0xFF];
+        int s3 = S3[(ans >> 8) & 0xFF];
+        int s4 = S4[ans & 0xFF];
+
+        int t2 = (s1 + s2) - s3;
+        return t2 ^ s4;
     }
 
     @Override
