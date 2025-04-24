@@ -140,6 +140,20 @@ public class CAST384 extends CASTCipher {
     @Override
     public void dodecad(int[] block, int[] Tm, int[] Tr, int idx) {
         // Add your code here
+       block[10] = block[10] ^ f1(block[11], Tm[idx], Tr[idx]);
+       block[9] = block[9] ^ f2(block[10], Tm[idx + 1], Tr[idx + 1]);
+       block[8] = block[8] ^ f3(block[9], Tm[idx + 2], Tr[idx + 2]);
+       block[7] = block[7] ^ f4(block[8], Tm[idx + 3], Tr[idx + 3]);
+       block[6] = block[6] ^ f5(block[7], Tm[idx + 4], Tr[idx + 4]);
+       block[5] = block[5] ^ f6(block[6], Tm[idx + 5], Tr[idx + 5]);
+
+       block[4] = block[4] ^ f1(block[5], Tm[idx + 6], Tr[idx + 6]);
+       block[3] = block[3] ^ f2(block[4], Tm[idx + 7], Tr[idx + 7]);
+       block[2] = block[2] ^ f3(block[3], Tm[idx + 8], Tr[idx + 8]);
+       block[1] = block[1] ^ f4(block[2], Tm[idx + 9], Tr[idx + 9]);
+       block[0] = block[0] ^ f5(block[1], Tm[idx + 10], Tr[idx + 10]);
+
+       block[11] = block[11] ^ f6(block[0], Tm[idx + 11], Tr[idx + 11]);
     }
 
     @Override
