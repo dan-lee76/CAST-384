@@ -21,7 +21,23 @@ public class CAST384 extends CASTCipher {
     @Override
     public CASTKeySet generateScheduleKeys(int roundCount, int dodecadCount) {
         // Add your code here
-        return new CASTKeySet(null, null);
+        int cm = 0x5A827999;
+        int cr = 19;
+        int ctm = 0x6ED9EBA1;
+        int ctr = 17;
+
+        int totalPairs = roundCount * dodecadCount * 12;
+
+        int[] tm = new int[totalPairs];
+        int[] tr = new int[totalPairs];
+
+        for (int i = 0; i < totalPairs; i++) {
+            tm[i] = cm;
+            cm += ctm;
+            tr[i] = cr;
+            cr = (cr + ctr) % 32;
+        }
+        return new CASTKeySet(tm, tr);
     }
 
     @Override
