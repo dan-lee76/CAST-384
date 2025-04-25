@@ -16,6 +16,10 @@ public class CAST384 extends CASTCipher {
     @Override
     public void initialise(byte[] key) {
         // Add your code here
+        CASTKeySet scheduleKeys = generateScheduleKeys(12,4);
+        K = generateRoundKeys(scheduleKeys, key, 12, 4);
+
+
     }
 
     @Override
@@ -40,7 +44,7 @@ public class CAST384 extends CASTCipher {
         return new CASTKeySet(tm, tr);
     }
 
-    static int[] bytesToInt(byte[] input) {
+    static int[] bytesToInt(byte[] input) { //Need to add the padding
         int[] block = new int[12];
         for(int i = 0; i < 12; i++){
             block[i] = (input[(4*i)] & 0xff) << 24 |
@@ -191,11 +195,25 @@ public class CAST384 extends CASTCipher {
     @Override
     public void hexad(int[] block, int[] Km, int[] Kr, int idx) {
         // Add your code here
+        block[4] = block[4] ^ f1(block[5], Km[idx], Kr[idx]);
+        block[3] = block[3] ^ f2(block[4], Km[idx + 1], Kr[idx + 1]);
+        block[2] = block[2] ^ f3(block[3], Km[idx + 2], Kr[idx + 2]);
+        block[1] = block[1] ^ f4(block[2], Km[idx + 3], Kr[idx + 3]);
+        block[0] = block[0] ^ f5(block[1], Km[idx + 4], Kr[idx + 4]);
+
+        block[5] = block[5] ^ f6(block[0], Km[idx + 5], Kr[idx + 5]);
     }
 
     @Override
     public void hexadInv(int[] block, int[] Km, int[] Kr, int idx) {
         // Add your code here
+        block[5] = block[5] ^ f6(block[0], Km[idx + 5], Kr[idx + 5]);
+
+        block[0] = block[0] ^ f5(block[1], Km[idx + 4], Kr[idx + 4]);
+        block[1] = block[1] ^ f4(block[2], Km[idx + 3], Kr[idx + 3]);
+        block[2] = block[2] ^ f3(block[3], Km[idx + 2], Kr[idx + 2]);
+        block[3] = block[3] ^ f2(block[4], Km[idx + 1], Kr[idx + 1]);
+        block[4] = block[4] ^ f1(block[5], Km[idx], Kr[idx]);
     }
 
     @Override
