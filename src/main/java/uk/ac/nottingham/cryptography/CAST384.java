@@ -25,10 +25,10 @@ public class CAST384 extends CASTCipher {
     @Override
     public CASTKeySet generateScheduleKeys(int roundCount, int dodecadCount) {
         // Add your code here
-        int cm = 0x5A827999;
-        int cr = 19;
-        int ctm = 0x6ED9EBA1;
-        int ctr = 17;
+        int cM = 0x5A827999;
+        int cR = 19;
+        int cTriangleM = 0x6ED9EBA1;
+        int cTriangleR = 17;
 
         int totalPairs = roundCount * dodecadCount * 12;
 
@@ -36,15 +36,15 @@ public class CAST384 extends CASTCipher {
         int[] tr = new int[totalPairs];
 
         for (int i = 0; i < totalPairs; i++) {
-            tm[i] = cm;
-            cm += ctm;
-            tr[i] = cr;
-            cr = (cr + ctr) % 32;
+            tm[i] = cM;
+            cM += cTriangleM;
+            tr[i] = cR;
+            cR = (cR + cTriangleR) % 32;
         }
         return new CASTKeySet(tm, tr);
     }
 
-    static int[] bytesToInt(byte[] input, int size) { //Need to add the padding
+    int[] bytesToInt(byte[] input, int size) { //Need to add the padding
         int[] block = new int[size];
         for(int i = 0; i < size; i++){
             if(i*4 <= input.length-1) {
@@ -60,7 +60,7 @@ public class CAST384 extends CASTCipher {
         return block;
     }
 
-    static byte[] intToBytes(int[] input, int size){
+    byte[] intToBytes(int[] input, int size){
         byte[] block = new byte[size];
         for(int i = 0; i < (size/4); i++){
             block[4*i] = (byte) ((input[i] >> 24) & 0xff);
