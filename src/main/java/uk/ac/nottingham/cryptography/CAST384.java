@@ -244,7 +244,7 @@ public class CAST384 extends CASTCipher {
         for(int i = 6; i < 12; i++){
             hexadInv(dataBlock, Km, Kr, i*6);
         }
-        // Might need to find a more efficient way
+
         byte[] encryptedBytes = intToBytes(dataBlock, 24);
         System.arraycopy(encryptedBytes, 0, data, 0, 24);
 
@@ -252,7 +252,19 @@ public class CAST384 extends CASTCipher {
 
     @Override
     public void decrypt(byte[] data) {
+        int[] dataBlock = bytesToInt(data,6);
+        int[] Km = K.getM();
+        int[] Kr = K.getR();
 
+        for(int i = 0; i < 6; i++){
+            hexad(dataBlock, Km, Kr, 66-(i*6));
+        }
+        for(int i = 6; i < 12; i++){
+            hexadInv(dataBlock, Km, Kr, 66-(i*6));
+        }
+
+        byte[] encryptedBytes = intToBytes(dataBlock, 24);
+        System.arraycopy(encryptedBytes, 0, data, 0, 24);
     }
 
 }
