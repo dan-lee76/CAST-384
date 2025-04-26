@@ -44,13 +44,29 @@ public class CAST384 extends CASTCipher {
         return new CASTKeySet(tm, tr);
     }
 
-    static int[] bytesToInt(byte[] input) { //Need to add the padding
-        int[] block = new int[12];
-        for(int i = 0; i < 12; i++){
-            block[i] = (input[(4*i)] & 0xff) << 24 |
-                    (input[(4*i)+1] & 0xff) << 16 |
-                    (input[(4*i)+2] & 0xff) << 8 |
-                    (input[(4*i)+3] & 0xff);
+    static int[] bytesToInt(byte[] input, int size) { //Need to add the padding
+        int[] block = new int[size];
+        for(int i = 0; i < size; i++){
+            if(i*4 <= input.length-1) {
+                block[i] = (input[(4 * i)] & 0xff) << 24 |
+                        (input[(4 * i) + 1] & 0xff) << 16 |
+                        (input[(4 * i) + 2] & 0xff) << 8 |
+                        (input[(4 * i) + 3] & 0xff);
+            }
+            else{
+                block[i] = 0;
+            }
+        }
+        return block;
+    }
+
+    static byte[] intToBytes(int[] input, int size){
+        byte[] block = new byte[size];
+        for(int i = 0; i < (size/4); i++){
+            block[4*i] = (byte) ((input[i] >> 24) & 0xff);
+            block[(4*i)+1] = (byte) ((input[i] >> 16) & 0xff);
+            block[(4*i)+2] = (byte) ((input[i] >> 8) & 0xff);
+            block[(4*i)+3] = (byte) (input[i] & 0xff);
         }
         return block;
     }
@@ -62,7 +78,7 @@ public class CAST384 extends CASTCipher {
         int idxValue = 0;
         int[] km = new int[totalPairs];
         int[] kr = new int[totalPairs];
-        int[] keyBlock = bytesToInt(key);
+        int[] keyBlock = bytesToInt(key, 12);
 
         int[] Tm = T.getM();
         int[] Tr = T.getR();
@@ -219,11 +235,24 @@ public class CAST384 extends CASTCipher {
     @Override
     public void encrypt(byte[] data) {
         // Add your code here
+        int[] dataBlock = bytesToInt(data,6);
+        int[] Km = K.getM();
+        int[] Kr = K.getR();
+        for(int i = 0; i < 6; i++){
+            hexad(dataBlock, Km, Kr, i*6);
+        }
+        for(int i = 6; i < 12; i++){
+            hexadInv(dataBlock, Km, Kr, i*6);
+        }
+        // Might need to find a more efficient way
+        byte[] encryptedBytes = intToBytes(dataBlock, 24);
+        System.arraycopy(encryptedBytes, 0, data, 0, 24);
+
     }
 
     @Override
     public void decrypt(byte[] data) {
-        // Add your code here
+
     }
 
 }
