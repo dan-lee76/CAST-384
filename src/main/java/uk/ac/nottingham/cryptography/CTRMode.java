@@ -15,11 +15,10 @@ public class CTRMode extends CipherMode {
 
     byte[] counter; //8
     byte[] nonce; //16
-    int bitsRemaining = 24;
+    int bitsRemaining; //24
 
     @Override
     public void initialise(Cipher cipher, byte[] key, byte[] nonce) {
-        // Add your code here
         cipher = new CAST384();
         cipher.initialise(key);
         this.cipher = cipher;
@@ -29,7 +28,7 @@ public class CTRMode extends CipherMode {
 
     }
 
-    byte[] concatCopy(int blockSize){
+    byte[] concatCopy(int blockSize) { //Concatenate nonce and counter into a single byte array
         byte[] concat = new byte[Math.max(blockSize, nonce.length + counter.length)];
         System.arraycopy(nonce, 0, concat, 0, nonce.length);
         System.arraycopy(counter, 0, concat, nonce.length, counter.length);
@@ -43,8 +42,8 @@ public class CTRMode extends CipherMode {
         byte[] concatBlock = concatCopy(blockSize);
         cipher.encrypt(concatBlock);
 
-        for(int i = 0; i < dataLength; i++) {
-            if(bitsRemaining <= 0) {
+        for (int i = 0; i < dataLength; i++) {
+            if (bitsRemaining <= 0) {
                 for (int j = 7; j >= 0; j--) {
                     if (++counter[j] != 0) {
                         break;
@@ -54,7 +53,7 @@ public class CTRMode extends CipherMode {
                 concatBlock = concatCopy(blockSize);
                 cipher.encrypt(concatBlock);
             }
-            data[i] ^= concatBlock[(24-bitsRemaining)];
+            data[i] ^= concatBlock[(24 - bitsRemaining)];
             bitsRemaining--;
 
         }
@@ -67,8 +66,7 @@ public class CTRMode extends CipherMode {
 
     @Override
     public void seek(byte[] counter) {
-        // Add your code here
         bitsRemaining = 24;
-        System.arraycopy(counter, 0, this.counter, this.counter.length-counter.length, counter.length);
+        System.arraycopy(counter, 0, this.counter, this.counter.length - counter.length, counter.length);
     }
 }
