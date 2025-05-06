@@ -15,6 +15,7 @@ public class CTRMode extends CipherMode {
 
     byte[] counter; //8
     byte[] nonce; //16
+    int bitsRemaining = 24;
 
     @Override
     public void initialise(Cipher cipher, byte[] key, byte[] nonce) {
@@ -24,6 +25,7 @@ public class CTRMode extends CipherMode {
         this.cipher = cipher;
         counter = new byte[8];
         this.nonce = nonce;
+        bitsRemaining = 24;
 
     }
 
@@ -36,39 +38,25 @@ public class CTRMode extends CipherMode {
 
     @Override
     public void encrypt(byte[] data) {
-        // Add your code here
-        int blockSize = 24;
+        int blockSize = Math.min(bitsRemaining, 24);
         int dataLength = data.length;
-        int dataLengthBlocked = dataLength/blockSize;
-        int dataLengthMod = dataLength % blockSize;
+        byte[] concatBlock = concatCopy(blockSize);
+        cipher.encrypt(concatBlock);
 
-        for(int i = 0; i < dataLengthBlocked; i++) {
-            byte[] concatBlock = concatCopy(blockSize);
-            cipher.encrypt(concatBlock);
-            int offset = i * blockSize;
-            for (int j = 0; j < blockSize; j++) {
-                data[offset+j] ^= concatBlock[j];
-            }
-
-            for (int j = 7; j >= 0; j--) {
-                if (++counter[j] != 0) {
-                    break;
+        for(int i = 0; i < dataLength; i++) {
+            if(bitsRemaining <= 0) {
+                for (int j = 7; j >= 0; j--) {
+                    if (++counter[j] != 0) {
+                        break;
+                    }
                 }
+                bitsRemaining = 24;
+                concatBlock = concatCopy(blockSize);
+                cipher.encrypt(concatBlock);
             }
-        }
+            data[i] ^= concatBlock[(24-bitsRemaining)];
+            bitsRemaining--;
 
-        if(dataLengthMod > 0){
-            byte[] concatBlock = concatCopy(blockSize);
-            cipher.encrypt(concatBlock);
-            int offset = dataLengthBlocked * blockSize;
-            for (int j = 0; j < dataLengthMod; j++) {
-                data[offset+j] ^= concatBlock[j];
-            }
-            for (int j = 7; j >= 0; j--) {
-                if (++counter[j] != 0) {
-                    break;
-                }
-            }
         }
     }
 
@@ -80,6 +68,7 @@ public class CTRMode extends CipherMode {
     @Override
     public void seek(byte[] counter) {
         // Add your code here
+        bitsRemaining = 24;
         System.arraycopy(counter, 0, this.counter, this.counter.length-counter.length, counter.length);
     }
 }

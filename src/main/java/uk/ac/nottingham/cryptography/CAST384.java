@@ -39,7 +39,7 @@ public class CAST384 extends CASTCipher {
             tm[i] = cM;
             cM += cTriangleM;
             tr[i] = cR;
-            cR = (cR + cTriangleR) % 32;
+            cR = (cR + cTriangleR) & 31;
         }
         return new CASTKeySet(tm, tr);
     }
@@ -60,8 +60,7 @@ public class CAST384 extends CASTCipher {
         return block;
     }
 
-    byte[] intToBytes(int[] input, int size){
-        byte[] block = new byte[size];
+    byte[] intToBytes(int[] input, byte[] block, int size){
         for(int i = 0; i < (size/4); i++){
             block[4*i] = (byte) ((input[i] >> 24) & 0xff);
             block[(4*i)+1] = (byte) ((input[i] >> 16) & 0xff);
@@ -245,8 +244,8 @@ public class CAST384 extends CASTCipher {
             hexadInv(dataBlock, Km, Kr, i*6);
         }
 
-        byte[] encryptedBytes = intToBytes(dataBlock, 24);
-        System.arraycopy(encryptedBytes, 0, data, 0, 24);
+        intToBytes(dataBlock, data, 24);
+//        System.arraycopy(encryptedBytes, 0, data, 0, 24);
 
     }
 
@@ -263,8 +262,8 @@ public class CAST384 extends CASTCipher {
             hexadInv(dataBlock, Km, Kr, 66-(i*6));
         }
 
-        byte[] encryptedBytes = intToBytes(dataBlock, 24);
-        System.arraycopy(encryptedBytes, 0, data, 0, 24);
+        intToBytes(dataBlock, data,24);
+//        System.arraycopy(encryptedBytes, 0, data, 0, 24);
     }
 
 }
