@@ -40,7 +40,7 @@ public class CAST384 extends CASTCipher {
         return new CASTKeySet(tm, tr);
     }
 
-    int[] bytesToInt(byte[] input, int size) {
+    int[] bytesToInt(byte[] input, int size) { // Converts bytes to integers
         int[] block = new int[size];
         for (int i = 0; i < size; i++) {
             if (i * 4 <= input.length - 1) {
@@ -49,13 +49,13 @@ public class CAST384 extends CASTCipher {
                         (input[(4 * i) + 2] & 0xff) << 8 |
                         (input[(4 * i) + 3] & 0xff);
             } else {
-                block[i] = 0; // Pads with zeros if input is not required size
+                block[i] = 0; // Pads with zeros if input is not the required size
             }
         }
         return block;
     }
 
-    void intToBytes(int[] input, byte[] block) {
+    void intToBytes(int[] input, byte[] block) { // Converts ints into bytes via pass through reference.
         for (int i = 0; i < (24 / 4); i++) {
             block[4 * i] = (byte) ((input[i] >> 24) & 0xff);
             block[(4 * i) + 1] = (byte) ((input[i] >> 16) & 0xff);

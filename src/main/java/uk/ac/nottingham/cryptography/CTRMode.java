@@ -28,7 +28,7 @@ public class CTRMode extends CipherMode {
 
     }
 
-    byte[] concatCopy(int blockSize) { //Concatenate nonce and counter into a single byte array
+    byte[] concatCopy(int blockSize) { // Concatenate nonce and counter into a single byte array
         byte[] concat = new byte[Math.max(blockSize, nonce.length + counter.length)];
         System.arraycopy(nonce, 0, concat, 0, nonce.length);
         System.arraycopy(counter, 0, concat, nonce.length, counter.length);
